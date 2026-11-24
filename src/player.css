@@ -1,0 +1,329 @@
+/* Hallmark · Åndehul · A quiet reading room with a single breathing stone. */
+/* The exercise cue stays in the same place as the pebble expands and settles. */
+:root {
+  --coach-paper: #fffcf6;
+  --coach-ink: #393d34;
+  --coach-muted: #62665a;
+  --coach-line: #dedbd0;
+  --coach-primary: #a45136;
+  --coach-primary-hover: #89422d;
+  --coach-on-primary: #fffaf3;
+  --coach-wash: #f2eee1;
+  --coach-ring: #ded8c5;
+  --coach-backdrop: rgb(39 39 30 / 44%);
+  --coach-shadow: 0 18px 80px rgb(36 40 26 / 18%);
+  --coach-body: 'DM Sans Variable', 'DM Sans', sans-serif;
+  --coach-display: 'Lora Variable', Lora, Georgia, serif;
+}
+
+.coach-player,
+.coach-player * {
+  box-sizing: border-box;
+}
+
+.coach-player {
+  position: fixed;
+  inset: 0;
+  width: min(480px, calc(100% - 28px));
+  max-width: none;
+  max-height: calc(100% - 28px);
+  max-height: calc(100dvh - 28px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--coach-line);
+  border-radius: 24px;
+  background: var(--coach-paper);
+  color: var(--coach-ink);
+  font: 400 16px/1.5 var(--coach-body);
+  box-shadow: var(--coach-shadow);
+  overscroll-behavior: contain;
+}
+
+.coach-player::backdrop {
+  background: var(--coach-backdrop);
+  backdrop-filter: blur(3px);
+}
+
+.coach-player [hidden] {
+  display: none !important;
+}
+
+.coach-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 22px clamp(18px, 5vw, 36px) 30px;
+}
+
+.coach-topline,
+.coach-time,
+.coach-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.coach-category,
+.coach-time,
+.coach-duration {
+  color: var(--coach-muted);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.coach-player button,
+.coach-player select {
+  color: inherit;
+  font: 500 0.92rem/1.2 var(--coach-body);
+  cursor: pointer;
+}
+
+.coach-player button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.coach-player button svg {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.coach-player button:focus-visible,
+.coach-player select:focus-visible {
+  outline: 2px solid var(--coach-primary);
+  outline-offset: 3px;
+}
+
+.coach-player .coach-close {
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  border-radius: 50%;
+}
+
+.coach-player .coach-close:hover,
+.coach-player .coach-sound:hover {
+  background: var(--coach-wash);
+}
+
+.coach-player h2,
+.coach-player h3 {
+  min-width: 0;
+  margin: 0;
+  font-family: var(--coach-display);
+  font-weight: 500;
+  line-height: 1.18;
+  overflow-wrap: break-word;
+}
+
+.coach-player h2 {
+  margin-top: 4px;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  letter-spacing: -0.045em;
+}
+
+.coach-orbit {
+  --coach-expansion: 0;
+  position: relative;
+  display: grid;
+  height: clamp(150px, 26dvh, 232px);
+  min-height: 118px;
+  place-items: center;
+  isolation: isolate;
+}
+
+.coach-orbit-rings {
+  position: absolute;
+  aspect-ratio: 1;
+  height: 72%;
+  border: 1px solid var(--coach-ring);
+  border-radius: 50%;
+  background: var(--coach-wash);
+  transform: scale(calc(0.87 + var(--coach-expansion) * 0.2));
+  transition: transform 140ms linear;
+}
+
+.coach-orbit-rings::before {
+  position: absolute;
+  inset: -10%;
+  border: 1px solid var(--coach-ring);
+  border-radius: 50%;
+  content: '';
+  opacity: 0.62;
+}
+
+.coach-pebble {
+  z-index: 1;
+  display: block;
+  width: auto;
+  height: 61%;
+  max-width: 75%;
+  object-fit: contain;
+  transform: translateY(calc(var(--coach-expansion) * -4px));
+  transition: transform 140ms linear;
+}
+
+.coach-cue {
+  min-height: 95px;
+  text-align: center;
+}
+
+.coach-cue h3 {
+  font-size: clamp(1.4rem, 4.2vw, 1.8rem);
+  letter-spacing: -0.04em;
+}
+
+.coach-cue p {
+  max-width: 36ch;
+  margin: 9px auto 0;
+  color: var(--coach-muted);
+  font-size: 0.97rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.coach-session-controls {
+  margin-top: 18px;
+}
+
+.coach-time {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.coach-progress {
+  display: block;
+  flex: 1;
+  width: 0;
+  height: 4px;
+  overflow: hidden;
+  appearance: none;
+  border: 0;
+  border-radius: 20px;
+  background: var(--coach-line);
+  color: var(--coach-primary);
+}
+
+.coach-progress::-webkit-progress-bar {
+  background: var(--coach-line);
+}
+
+.coach-progress::-webkit-progress-value {
+  background: var(--coach-primary);
+}
+
+.coach-progress::-moz-progress-bar {
+  background: var(--coach-primary);
+}
+
+.coach-actions {
+  margin-top: 17px;
+}
+
+.coach-duration {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 2px;
+  font-size: 0.73rem;
+}
+
+.coach-duration select {
+  max-width: 100%;
+  margin-left: -3px;
+  padding: 3px 0;
+  border: none;
+  border-radius: 4px;
+  background: var(--coach-paper);
+  color: var(--coach-ink);
+}
+
+.coach-player .coach-playback,
+.coach-player .coach-done {
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 30px;
+  background: var(--coach-primary);
+  color: var(--coach-on-primary);
+}
+
+.coach-player .coach-playback:hover,
+.coach-player .coach-done:hover {
+  background: var(--coach-primary-hover);
+}
+
+.coach-player .coach-sound {
+  min-height: 44px;
+  margin-right: -6px;
+  padding: 0 7px;
+  border-radius: 12px;
+  color: var(--coach-muted);
+}
+
+.coach-player .coach-sound[aria-pressed=true] {
+  color: var(--coach-primary);
+}
+
+.coach-player .coach-speech {
+  display: flex;
+  width: fit-content;
+  min-height: 36px;
+  margin: 12px auto -6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: var(--coach-muted);
+  font-size: 0.85rem;
+}
+
+.coach-player .coach-speech:hover,
+.coach-player .coach-speech[aria-pressed=true] {
+  background: var(--coach-wash);
+  color: var(--coach-primary);
+}
+
+.coach-speech svg {
+  width: 16px;
+  height: 16px;
+}
+
+.coach-player .coach-sound:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.coach-player .coach-done {
+  align-self: center;
+  margin-top: 18px;
+}
+
+@media (max-width: 365px) {
+  .coach-actions { gap: 6px; }
+  .coach-player .coach-sound span { display: none; }
+  .coach-player .coach-sound { min-width: 42px; }
+}
+
+@media (max-height: 550px) {
+  .coach-orbit { height: 120px; }
+  .coach-cue { min-height: 70px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach-orbit-rings,
+  .coach-pebble {
+    transform: none;
+    transition: none;
+  }
+}
+
+html.less-motion .coach-orbit-rings,
+html.less-motion .coach-pebble {
+  transform: none;
+  transition: none;
+}

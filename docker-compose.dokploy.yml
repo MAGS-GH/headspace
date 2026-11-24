@@ -1,0 +1,14 @@
+services:
+  web:
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.routers.${ROUTER_NAME:?Angiv et unikt routernavn}.rule=Host(`${APP_HOST:?Angiv appens domæne}`)"
+      - "traefik.http.routers.${ROUTER_NAME}.service=${ROUTER_NAME}"
+      - "traefik.http.services.${ROUTER_NAME}.loadbalancer.server.port=3000"
+
+networks:
+  dokploy-network:
+    external: true

@@ -1,0 +1,13 @@
+node_modules/
+dist/
+artifacts/
+.hallmark/
+**/bin/
+**/obj/
+*.user
+.vs/
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
