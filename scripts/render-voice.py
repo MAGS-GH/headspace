@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SHORT_CLIPS = {
     "greeting": "Hej med dig. Skal vi tage en lille pause sammen?",
     "welcome": "Lad skuldrene hvile. Vi tager det i dit tempo.",
-    "little-stone": "Psst. Selv en sten som mig kan godt lide en lille pause.",
+    "little-stone": "Selv en sten som mig kan godt lide en lille pause.",
     "inhale": "Træk vejret ind.",
     "exhale": "Pust langsomt ud.",
     "pause": "Vi holder en lille pause.",
@@ -92,6 +92,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("model", type=Path, help="Path to da_DK-talesyntese-medium.onnx")
     parser.add_argument("--output", type=Path, default=ROOT / "public" / "voice")
+    parser.add_argument("--clip", help="Regenerate one clip in an existing complete voice pack")
     args = parser.parse_args()
     for path, digest in [(args.model, MODEL_SHA256), (Path(str(args.model) + ".json"), CONFIG_SHA256)]:
         if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
@@ -101,7 +102,11 @@ def main():
     voice = PiperVoice.load(args.model)
     style = SynthesisConfig(length_scale=1.12, noise_scale=0.58, noise_w_scale=0.66)
     clips = {**SHORT_CLIPS, **dict(exercise_scripts())}
+    if args.clip and args.clip not in clips:
+        parser.error(f"Unknown clip: {args.clip}")
     for name, script in clips.items():
+        if args.clip and args.clip != name:
+            continue
         render(voice, style, script, args.output / (name + ".mp3"))
         print(name, flush=True)
     write_mouth_index(args.output, clips)

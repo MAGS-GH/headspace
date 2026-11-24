@@ -66,7 +66,7 @@ const pebbleImage = (cls = '') => `<img src="/images/pebble.png" class="${cls}" 
 const wordmark = () => `<a href="#pusterum" class="brand" aria-label="Åndehul, til forsiden">${pebbleImage('brand-mark')}<span>Åndehul</span></a>`
 const greetings = [
   { clip: 'greeting', words: 'Hej med dig. Skal vi tage en lille pause sammen?' },
-  { clip: 'little-stone', words: 'Psst. Selv en sten som mig kan godt lide en lille pause.' },
+  { clip: 'little-stone', words: 'Selv en sten som mig kan godt lide en lille pause.' },
   { clip: 'welcome', words: 'Lad skuldrene hvile. Vi tager det i dit tempo.' },
 ] as const
 let nextGreeting = 0
