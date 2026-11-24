@@ -78,7 +78,7 @@ let greetingButton: HTMLButtonElement | null = null
 let greetingSettle: number | undefined
 
 function greetingFigure(variant: 'meadow' | 'portrait') {
-  return `<button type="button" data-action="greet" class="pebble-greeting ${variant}-friend" aria-label="Hør en hilsen fra Pebble">
+  return `<button type="button" data-action="greet" class="pebble-greeting ${variant}-friend" aria-label="Hør en hilsen fra Pebble" title="Hør Pebbles syntetiske danske stemme">
     <span class="greet-bubble">${icon('volume-2')}<span>Hils på mig</span></span>
     <span class="friend-shadow"></span><span class="friend-body">${pebbleFigure('awake')}</span>
   </button>`
@@ -188,7 +188,7 @@ function companion() {
       <div><h2>Hej, jeg er Pebble.</h2><p data-greeting-line>Jeg er en lille sten med god tid. Når jeg løfter mig, trækker vi vejret ind. Når jeg synker ned, puster vi ud.</p>
       <button class="primary" data-start="rolig-vejrtraekning" data-minutes="1">${icon('wind')}Ét minut med mig</button>
       </div></section>
-      <section class="detail-block"><h2>Pebble på skrivebordet</h2><p>På Windows kan Pebble sidde oven på dine andre vinduer. Klik på stenen for en pause, eller træk den hen, hvor den skal sidde.</p>
+      <section class="detail-block"><h2>Pebble på skrivebordet</h2><p>På Windows kan Pebble sidde oven på dine andre vinduer. Klik på stenen for en pause, eller træk den hen, hvor den skal sidde.</p><p>Pebbles danske stemme er lavet med talesyntesen Røst. Alle replikker følger med appen, så du også kan høre dem offline.</p>
       ${bridge ? `<div class="desktop-actions"><button class="secondary" data-action="show-pebble">${icon('monitor')}Vis Pebble på skrivebordet</button><button class="secondary" data-action="start-breathing">${icon('wind')}Træk vejret med Pebble</button></div>` : `<a class="secondary" href="/downloads/Aandehul-Windows.zip" download>${icon('download')}Hent til Windows</a><p class="small-note">Pak ZIP-filen ud, og start Aandehul.exe. Til Windows 10 og 11 (x64) med <a href="https://dotnet.microsoft.com/download/dotnet/10.0" target="_blank" rel="noreferrer">.NET 10 Desktop Runtime</a> og Microsoft Edge WebView2.</p>`}
       </section>`
 }

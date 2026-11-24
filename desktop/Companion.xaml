@@ -42,7 +42,7 @@
         <MenuItem x:Name="GreetMenu" Header="Hils på Pebble" Click="GreetClick" />
         <MenuItem x:Name="SessionMenu" Header="Træk vejret i ét minut" Click="ToggleClick" />
         <MenuItem x:Name="EndMenu" Header="Afslut pausen" Click="EndClick" />
-        <MenuItem x:Name="VoiceMenu" Header="Læs Pebbles ord højt" IsCheckable="True" IsChecked="True" Click="VoiceClick" />
+        <MenuItem x:Name="VoiceMenu" Header="Læs Pebbles ord højt" ToolTip="Pebbles syntetiske danske stemme er lavet med Røst." IsCheckable="True" IsChecked="True" Click="VoiceClick" />
         <MenuItem x:Name="MotionMenu" Header="Begræns bevægelse" IsCheckable="True" Click="MotionClick" />
         <Separator />
         <MenuItem Header="Skjul Pebble" Click="HideClick" />

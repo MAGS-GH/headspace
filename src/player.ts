@@ -195,7 +195,7 @@ export function openPlayer(exerciseId: string, minutes?: number): void {
   function showSpeechPreference() {
     element('.coach-speech-icon').innerHTML = icon(speechOn ? 'volume-2' : 'volume-x')
     speech.setAttribute('aria-pressed', String(speechOn))
-    speech.title = speechOn ? 'Slå Pebbles stemme fra' : 'Slå Pebbles danske stemme til'
+    speech.title = speechOn ? 'Slå Pebbles stemme fra' : 'Slå Pebbles syntetiske danske stemme til'
   }
 
   function updatePlayback() {

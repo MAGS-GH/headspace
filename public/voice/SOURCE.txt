@@ -1,17 +1,26 @@
 Pebbles danske stemme
 
-Åndehuls egne replikker er syntetiseret lokalt med Piper og den danske
-stemme da_DK-talesyntese-medium, 22.050 Hz. Appen indeholder færdige MP3-klip
-og en tidskurve for mundens bevægelse. Både web og Windows bruger de samme filer.
+De 27 danske MP3-klip er syntetisk tale fra CoRal Røst v3 Chatterbox 500M.
+Manuskriptet er skrevet til Åndehul. Mundkurven er målt på de færdige klip.
 
-Modelkort og modelversion
-https://huggingface.co/rhasspy/piper-voices/blob/c944985a323d1c7f9a02ee652f2fa43cd9bae205/da/da_DK/talesyntese/medium/MODEL_CARD
+Model: CoRal-project/roest-v3-chatterbox-500m
+Revision: 7ce205cea6b3b36d9f60f18abb88ff21fa04ea0d
+Grundmodel: Chatterbox Multilingual fra Resemble AI
+Dansk finjustering: Daniel Christopher Biørrith ved Alexandra Instituttet
+Stemmevalg: Modellens indbyggede standardstemme (conds.pt), sprogkode da.
+SHA-256 for conds.pt: 6552d70568833628ba019c6b03459e77fe71ca197d5c560cef9411bee9d87f4e
 
-Modelkortet angiver CC0 for træningsdataene. Modeltræner Michael Hansen
-oplyser desuden, at han ikke pålægger sine modeller yderligere begrænsninger.
-https://huggingface.co/rhasspy/piper-voices/discussions/12
-https://creativecommons.org/publicdomain/zero/1.0/
+Chatterbox tilføjer sit indbyggede Perth-lydvandmærke under syntesen.
+Web- og Windows-appen afspiller de samme medfølgende filer.
 
-Værktøjer ved produktionen: Piper 1.8.0 og FFmpeg med libmp3lame.
-https://github.com/OHF-Voice/piper1-gpl
+Modelkort og kreditering
+https://huggingface.co/CoRal-project/roest-v3-chatterbox-500m/blob/7ce205cea6b3b36d9f60f18abb88ff21fa04ea0d/README.md
+
+Modellicens
+Alexandra Instituttet A/S, Software – License to Use med OpenRAIL-vilkår.
+Afsnit III, punkt 5 omhandler genereret output.
+https://huggingface.co/CoRal-project/roest-v3-chatterbox-500m/blob/7ce205cea6b3b36d9f60f18abb88ff21fa04ea0d/LICENSE
+
+Værktøjer
+https://github.com/resemble-ai/chatterbox
 https://ffmpeg.org/

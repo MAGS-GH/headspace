@@ -6,7 +6,7 @@ Et lille, dansksproget pusterum med seks guidede øvelser og Pebble, en flytbar 
 
 Tryk på **Hils på mig** for at høre Pebble. Under **Start en pause** viser stenen dig rytmen med hele kroppen. Den løfter sig og vokser ved indånding og synker ned med rund mund ved udånding. Pilen og sekundtallet viser, hvor du er i åndedrættet. **Ét minut med mig** under **Mød Pebble** åbner en kort pause.
 
-Pebble kan også læse de danske meditationer og afspændingsøvelser højt. Stemmen følger med appen og virker offline. Brug **Pebbles stemme** i afspilleren for at slå tale til eller fra. Appen husker valget. Du kan ændre varigheden, holde pause og slå guideklange til undervejs.
+Pebble kan også læse de danske meditationer og afspændingsøvelser højt. Pebbles syntetiske danske stemme er lavet med CoRal Røst v3 Chatterbox 500M. Taleklippene følger med appen og virker offline. Brug **Pebbles stemme** i afspilleren for at slå tale til eller fra. Appen husker valget. Du kan ændre varigheden, holde pause og slå guideklange til undervejs.
 
 I **Indstillinger** kan du begrænse bevægelse og installere PWA'en. Åbn webudgaven én gang online, så browseren kan hente appen og dens lyd til offlinebrug. Installation kræver HTTPS eller localhost.
 

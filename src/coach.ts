@@ -75,7 +75,7 @@ export const exercises: Exercise[] = [
     minutes: 3,
     durations: [1, 3, 5],
     steps: [
-      { title: 'Sæt dig godt', instruction: 'Lad kroppen finde en rar stilling. Mærk dine fødder mod underlaget.' },
+      { title: 'Sæt dig godt', instruction: 'Find en behagelig stilling. Mærk dine fødder mod underlaget.' },
       { title: 'Lyt til rummet', instruction: 'Læg mærke til en lyd i nærheden. Lad den komme og gå.' },
       { title: 'Lyt lidt længere væk', instruction: 'Måske kan du høre noget udenfor. Vend roligt tilbage, når tankerne vandrer.' },
       { title: 'Vend tilbage', instruction: 'Lad blikket glide rundt i rummet. Giv dig tid til at komme videre.', pose: 'awake' },
