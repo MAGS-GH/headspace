@@ -1,0 +1,79 @@
+/* Pebble's artwork is registered on a common 500 × 400 canvas. */
+.pebble-figure {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  vertical-align: bottom;
+  isolation: isolate;
+  transform-origin: 51% 97%;
+  pointer-events: none;
+  user-select: none;
+}
+.pebble-figure > .pebble-part {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+}
+.part-sprout {
+  transform-origin: 67.6% 28%;
+  transform: rotate(calc(-5deg + var(--pebble-breath, .45) * 15deg));
+  transition: transform 170ms ease-out;
+}
+.pebble-figure[data-pose=awake] .part-sprout,
+.pebble-figure[data-pose=listening] .part-sprout { animation: pebble-leaf-stir 6.4s ease-in-out infinite; }
+.pebble-figure[data-pose=happy] .part-sprout { animation: pebble-leaf-nod 950ms ease-out both; }
+.part-eyes-rest, .part-eyes-open, .part-eyes-happy,
+.part-mouth-smile, .part-mouth-round, .part-mouth-talk { opacity: 0; }
+.part-eyes-rest, .part-eyes-happy, .part-eyes-open { transition: opacity 120ms ease-out; }
+.pebble-figure:is([data-pose=rest],[data-pose=inhale],[data-pose=exhale],[data-pose=paused]) .part-eyes-rest,
+.pebble-figure:is([data-pose=awake],[data-pose=listening]) .part-eyes-open,
+.pebble-figure[data-pose=happy] .part-eyes-happy { opacity: 1; }
+.pebble-figure:is([data-pose=awake],[data-pose=listening]) .part-eyes-open {
+  animation: pebble-blink 5.9s linear infinite;
+  transform-origin: 39% 52%;
+}
+.pebble-figure:is([data-pose=awake],[data-pose=listening]) .part-eyes-rest { animation: pebble-lids 5.9s linear infinite; }
+.pebble-figure:not([data-pose=exhale]) .part-mouth-smile,
+.pebble-figure[data-pose=exhale] .part-mouth-round { opacity: 1; }
+.pebble-figure.is-talking .part-mouth-round { opacity: 0; }
+.pebble-figure.is-talking .part-mouth-smile { opacity: clamp(0, calc(1 - var(--pebble-jaw, 0) * 5), 1); }
+.pebble-figure.is-talking .part-mouth-talk {
+  transform-origin: 37% 59%;
+  transform: scale(calc(.81 + var(--pebble-jaw, 0) * .19), calc(.12 + var(--pebble-jaw, 0) * .93));
+  opacity: clamp(0, calc(var(--pebble-jaw, 0) * 5), 1);
+  transition: transform 52ms linear, opacity 36ms linear;
+}
+@keyframes pebble-blink {
+  0%, 47%, 51%, 100% { transform: scaleY(1); opacity: 1; }
+  48.7%, 49.8% { transform: scaleY(.16); opacity: 0; }
+}
+@keyframes pebble-lids {
+  0%, 47%, 51%, 100% { opacity: 0; }
+  48.7%, 49.8% { opacity: 1; }
+}
+@keyframes pebble-leaf-stir {
+  0%, 100% { transform: rotate(-3deg); }
+  42% { transform: rotate(4deg); }
+  65% { transform: rotate(1deg); }
+}
+@keyframes pebble-leaf-nod {
+  0% { transform: rotate(-2deg); }
+  25% { transform: rotate(13deg); }
+  54% { transform: rotate(-7deg); }
+  77% { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pebble-figure .pebble-part { animation: none !important; transform: none !important; transition: none !important; }
+  .pebble-figure.is-talking .part-mouth-talk { opacity: 1; }
+  .pebble-figure.is-talking .part-mouth-smile { opacity: 0; }
+}
+html.less-motion .pebble-figure .pebble-part { animation: none !important; transform: none !important; transition: none !important; }
+html.less-motion .pebble-figure.is-talking .part-mouth-talk { opacity: 1; }
+html.less-motion .pebble-figure.is-talking .part-mouth-smile { opacity: 0; }

@@ -1,7 +1,8 @@
 <Window x:Class="Aandehul.Companion"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Pebble · Åndehul" Width="206" Height="166" WindowStyle="None"
+        xmlns:local="clr-namespace:Aandehul"
+        Title="Pebble · Åndehul" Width="218" Height="224" WindowStyle="None"
         AllowsTransparency="True" Topmost="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False" ShowActivated="False"
         FontFamily="Segoe UI" Foreground="#32483C">
@@ -38,26 +39,35 @@
     <Grid.ContextMenu>
       <ContextMenu x:Name="Options" Opened="OptionsOpened">
         <MenuItem Header="Åbn Åndehul" Click="OpenStudioClick" />
+        <MenuItem x:Name="GreetMenu" Header="Hils på Pebble" Click="GreetClick" />
         <MenuItem x:Name="SessionMenu" Header="Træk vejret i ét minut" Click="ToggleClick" />
         <MenuItem x:Name="EndMenu" Header="Afslut pausen" Click="EndClick" />
+        <MenuItem x:Name="VoiceMenu" Header="Læs Pebbles ord højt" IsCheckable="True" IsChecked="True" Click="VoiceClick" />
+        <MenuItem x:Name="MotionMenu" Header="Begræns bevægelse" IsCheckable="True" Click="MotionClick" />
         <Separator />
         <MenuItem Header="Skjul Pebble" Click="HideClick" />
         <MenuItem Header="Afslut Åndehul" Click="QuitClick" />
       </ContextMenu>
     </Grid.ContextMenu>
     <Grid.RowDefinitions>
+      <RowDefinition Height="60" />
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <Image x:Name="PebbleImage" Width="125" Height="114" Stretch="Uniform"
-           Cursor="Hand" RenderTransformOrigin=".5,.9"
-           MouseLeftButtonDown="PebbleDown" MouseLeftButtonUp="PebbleUp"
+    <Grid VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,1" IsHitTestVisible="False">
+      <Border Margin="0,0,0,6" Background="#FFFBF2" BorderBrush="#B7C0AD" BorderThickness="1"
+              CornerRadius="15" Padding="11,5" MaxWidth="199">
+        <TextBlock x:Name="SpeechBubble" Foreground="#344838" FontSize="13" LineHeight="17"
+                   TextAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+      </Border>
+      <Path Data="M0,0 L7,7 L13,0" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+            Fill="#FFFBF2" Stroke="#B7C0AD" StrokeThickness="1" />
+    </Grid>
+    <local:PebblePortrait Grid.Row="1" x:Name="Portrait" HorizontalAlignment="Center"
+           Cursor="Hand" MouseLeftButtonDown="PebbleDown" MouseLeftButtonUp="PebbleUp"
            MouseMove="PebbleMove" LostMouseCapture="PebbleLostCapture"
-           ToolTip="Klik for en pause. Træk for at flytte Pebble."
-           AutomationProperties.Name="Pebble">
-      <Image.RenderTransform><ScaleTransform x:Name="BreathScale" /></Image.RenderTransform>
-    </Image>
-    <Border Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,3"
+           ToolTip="Klik for en pause. Træk for at flytte Pebble." AutomationProperties.Name="Pebble" />
+    <Border Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,3"
             Background="#FFFCF4" BorderBrush="#B7C0AD" BorderThickness="1"
             CornerRadius="16" Padding="2">
       <DockPanel>

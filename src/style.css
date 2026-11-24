@@ -29,6 +29,9 @@
   --edge-shadow: 0 2px 4px rgb(62 48 21 / 2%);
   --mobile-hero: #fff1d7;
   --mask-ink: #000;
+  --ground-shadow: rgb(48 48 21 / 36%);
+  --bubble-paper: #fffaec;
+  --bubble-edge: #d5c7a6;
   --shadow: 0 4px 14px rgb(67 58 35 / 7%);
   --overlay: rgb(41 42 34 / 35%);
   --focus: #994a2e;
@@ -92,6 +95,41 @@ h1 { font-size: 42px; margin-top: 4px; }
 .hero { isolation: isolate; position: relative; display: flex; align-items: center; min-height: clamp(278px, 21vw, 325px); border-radius: 17px; overflow: hidden; background-color: var(--hero-base); background-image: url('/images/meadow.webp'); background-position: center 24%; background-size: cover; }
 .hero::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, var(--hero-wash) 0%, var(--hero-soft) 29%, var(--hero-clear) 61%); }
 .hero-content { padding: 32px 40px 36px; max-width: min(530px,62%); }
+.pebble-greeting {
+  display: inline-flex; align-items: center; flex-direction: column;
+  border: 0; padding: 0; background: transparent; border-radius: 24px;
+  isolation: isolate; color: var(--ink); -webkit-user-select: none; user-select: none;
+}
+.meadow-friend { position: absolute; right: 14%; bottom: 11%; width: clamp(105px,16%,197px); }
+.greet-bubble {
+  position: relative; z-index: 2; display: inline-flex; gap: 6px; align-items: center;
+  margin: 0 0 0 19%; padding: 4px 10px; border: 1px solid var(--bubble-edge);
+  border-radius: 12px 12px 12px 3px; background: var(--bubble-paper); white-space: nowrap;
+  font: 550 12px/1.4 var(--body); box-shadow: var(--edge-shadow);
+}
+.greet-bubble::after {
+  content: ''; position: absolute; bottom: -4px; left: 12px; width: 6px; height: 6px;
+  border-right: 1px solid var(--bubble-edge); border-bottom: 1px solid var(--bubble-edge);
+  background: var(--bubble-paper); transform: rotate(45deg);
+}
+.greet-bubble svg { width: 14px; height: 14px; color: var(--accent); }
+.pebble-greeting:is(:hover,:focus-visible) .greet-bubble { color: var(--accent); border-color: var(--accent); }
+.friend-body { display: block; position: relative; width: 100%; transform-origin: 52% 98%; animation: pebble-at-home 5.8s ease-in-out infinite; }
+.friend-shadow {
+  position: absolute; z-index: -1; bottom: 0; left: 9%; width: 84%; height: 9%;
+  border-radius: 50%; background: var(--ground-shadow); filter: blur(3px); animation: pebble-shadow-at-home 5.8s ease-in-out infinite;
+}
+.portrait-friend { position: relative; width: min(100%, 207px); }
+.portrait-friend .greet-bubble { margin-bottom: 8px; }
+.desktop-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@keyframes pebble-at-home {
+  0%, 100% { transform: scale(1.007,.975) rotate(-.6deg); }
+  45% { transform: scale(.99,1.035) rotate(.8deg) translateY(-1%); }
+}
+@keyframes pebble-shadow-at-home {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  45% { transform: scale(.90); opacity: .62; }
+}
 .feature-label { color: var(--accent); display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px; background-color: var(--hero-label); border-radius: 99px; font-size: 12px; font-weight: 650; }
 .feature-label svg { width: 15px; height: 15px; }
 .hero h2 { font-size: clamp(48px,4.35vw,67px); letter-spacing: -.062em; margin: 12px 0 8px; line-height: 1.13; }
@@ -158,7 +196,6 @@ h1 { font-size: 42px; margin-top: 4px; }
 .history-row time, .settings-row > button, .settings-row > .installed { margin-left: auto; flex-shrink: 0; }
 .companion-view { background: var(--checkin); border: 1px solid var(--pebble-border); border-radius: 16px; padding: clamp(24px, 4vw, 56px); display: flex; gap: clamp(24px, 4vw, 56px); align-items: center; }
 .companion-art { flex: 0 1 32%; text-align: center; }
-.companion-art img { width: min(100%, 215px); }
 .companion-view > div:last-child { flex: 1; }
 .companion-view p, .detail-block p { margin-left: 0; }
 .detail-block { margin-top: 32px; }
@@ -234,6 +271,8 @@ h1 { font-size: 42px; margin-top: 4px; }
   .hero::after { content: ''; position: absolute; z-index: -2; inset: 19% 0 0; background: url('/images/meadow.webp') 76% bottom / auto 100% no-repeat; mask-image: linear-gradient(to bottom, var(--transparent), var(--mask-ink) 21%); }
   .hero::before { background: linear-gradient(162deg, var(--hero-wash) 10%, var(--hero-soft) 38%, var(--hero-clear) 72%); }
   .hero-content { max-width: 88%; padding: 20px; }
+  .meadow-friend { right: 6%; bottom: 5%; width: clamp(79px, 23vw, 108px); }
+  .meadow-friend .greet-bubble { font-size: 11px; padding: 3px 7px; margin-left: 3%; }
   .hero h2 { font-size: 40px; margin: 8px 0 4px; }
   .hero p { max-width: 245px; }
   .hero-actions { margin-top: 16px; gap: 12px; }
@@ -250,7 +289,7 @@ h1 { font-size: 42px; margin-top: 4px; }
   .mood-options { gap: 4px; }
   .mood { padding: 8px 8px; }
   .companion-view { flex-direction: column; padding: 24px; gap: 16px; }
-  .companion-art img { width: 140px; }
+  .portrait-friend { width: 142px; }
   .settings-row { flex-wrap: wrap; }
   .settings-row > div { flex: 1; min-width: 140px; }
   .settings-row .secondary { padding-inline: 8px; }

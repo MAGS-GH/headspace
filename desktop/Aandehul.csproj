@@ -14,7 +14,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
     <Content Include="../public/images/pebble.png" Condition="!Exists('../dist/images/pebble.png') and Exists('../public/images/pebble.png')" Link="Web/images/pebble.png" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="../dist/**/*" Exclude="../dist/downloads/**/*" Link="Web/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../public/images/pebble-parts/*.png" Link="Web/images/pebble-parts/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../public/voice/**/*" Link="Web/voice/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../dist/**/*" Exclude="../dist/downloads/**/*;../dist/images/pebble-parts/*.png;../dist/voice/**/*" Link="Web/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
   <Target Name="RequireBundledWeb" BeforeTargets="Publish">
     <Error Condition="!Exists('../dist/index.html')" Text="Byg webappen fra roden med npm ci og npm run build før udgivelse." />

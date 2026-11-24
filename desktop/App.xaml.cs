@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using Forms = System.Windows.Forms;
@@ -25,9 +27,13 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-        // Both handles live in the current Windows session.
-        wake = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Aandehul.Show.v1");
-        instance = new Mutex(true, @"Local\Aandehul.Instance.v1", out bool first);
+        // The default profile keeps the same instance handles across app updates.
+        // A separate portable profile has its own history and foreground window.
+        string suffix = Environment.GetEnvironmentVariable("AANDEHUL_DATA_DIR") is string custom && Path.IsPathFullyQualified(custom)
+            ? "." + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(custom).ToUpperInvariant())))[..20]
+            : "";
+        wake = new EventWaitHandle(false, EventResetMode.AutoReset, @"Local\Aandehul.Show.v1" + suffix);
+        instance = new Mutex(true, @"Local\Aandehul.Instance.v1" + suffix, out bool first);
         if (!first)
         {
             wake.Set();

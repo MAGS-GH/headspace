@@ -3,6 +3,8 @@ import { exercises, getHistory, isFavorite, toggleFavorite, type Exercise } from
 import { openPlayer } from './player'
 import { ambientState, environments, setEnvironment, setLevel, type EnvironmentId } from './ambient'
 import { icon } from './icon'
+import { pebbleFigure } from './pebble'
+import { playPebbleVoice, stopPebbleVoice } from './pebble-voice'
 
 const navItems = [
   { id: 'pusterum', label: 'Mit pusterum', icon: 'house' },
@@ -15,10 +17,10 @@ const pageTitles: Record<Page, string> = { pusterum: 'Mit pusterum', bibliotek: 
 const artwork: Record<string, string> = { 'rolig-vejrtraekning': 'breath', kropsscanning: 'body', 'giv-slip-paa-dagen': 'evening', 'et-roligt-oejeblik': 'pond', 'blid-udanding': 'reeds', 'lette-skuldre': 'hills' }
 const categoryIcon: Record<string, string> = { 'Vejrtrækning': 'wind', 'Afspænding': 'flower-2', 'Meditation': 'moon-star' }
 const moods = [
-  { id: 'urolig', title: 'Urolig', icon: 'frown' },
-  { id: 'traet', title: 'Træt', icon: 'cloud-moon' },
-  { id: 'tilpas', title: 'Tilpas', icon: 'smile' },
-  { id: 'glad', title: 'Glad', icon: 'sun' },
+  { id: 'urolig', title: 'Urolig', icon: 'frown', reply: 'Jeg bliver lige her. Vi kan tage ét åndedrag ad gangen.' },
+  { id: 'traet', title: 'Træt', icon: 'cloud-moon', reply: 'Du må gerne hvile lidt. Jeg holder dig med selskab.' },
+  { id: 'tilpas', title: 'Tilpas', icon: 'smile', reply: 'Hvor rart. Skal vi bare blive her et øjeblik?' },
+  { id: 'glad', title: 'Glad', icon: 'sun', reply: 'Nu smiler jeg også. Lad os nyde det et øjeblik.' },
 ]
 const dateFormat = new Intl.DateTimeFormat('da-DK', { weekday: 'long', day: 'numeric', month: 'long' })
 const timeFormat = new Intl.DateTimeFormat('da-DK', { hour: '2-digit', minute: '2-digit' })
@@ -62,6 +64,21 @@ function getPage(): Page {
 }
 const pebbleImage = (cls = '') => `<img src="/images/pebble.png" class="${cls}" alt="" draggable="false">`
 const wordmark = () => `<a href="#pusterum" class="brand" aria-label="Åndehul, til forsiden">${pebbleImage('brand-mark')}<span>Åndehul</span></a>`
+const greetings = [
+  { clip: 'greeting', words: 'Hej med dig. Skal vi tage en lille pause sammen?' },
+  { clip: 'little-stone', words: 'Psst. Selv en sten som mig kan godt lide en lille pause.' },
+  { clip: 'welcome', words: 'Lad skuldrene hvile. Vi tager det i dit tempo.' },
+] as const
+let nextGreeting = 0
+let greetingButton: HTMLButtonElement | null = null
+let greetingSettle: number | undefined
+
+function greetingFigure(variant: 'meadow' | 'portrait') {
+  return `<button type="button" data-action="greet" class="pebble-greeting ${variant}-friend" aria-label="Hør en hilsen fra Pebble">
+    <span class="greet-bubble">${icon('volume-2')}<span>Hils på mig</span></span>
+    <span class="friend-shadow"></span><span class="friend-body">${pebbleFigure('awake')}</span>
+  </button>`
+}
 function navLink(id: Page, label: string, glyph: string) {
   return `<a class="nav-link" href="#${id}" data-nav="${id}">${icon(glyph)}<span>${label}</span></a>`
 }
@@ -115,20 +132,21 @@ function exerciseCard(exercise: Exercise) {
 const grid = (items: Exercise[]) => `<div class="exercise-grid">${items.map(exerciseCard).join('')}</div>`
 function home() {
   const current = activeMood()
+  const reply = moods.find(m => m.id === current)?.reply
   return `<section class="hero" aria-labelledby="hero-title">
       <div class="hero-content">
         <span class="feature-label">${icon('sunrise')}Dagens pause</span>
         <h2 id="hero-title">Et øjebliks ro.</h2>
-        <p>Sænk skuldrene, og find tilbage til dit åndedræt.</p>
+        <p data-greeting-line>Jeg hedder Pebble. Skal vi trække vejret sammen?</p>
         <div class="hero-actions"><button class="primary" data-start="rolig-vejrtraekning">${icon('play')}Start en pause</button><span class="time">${icon('clock')}3 min</span></div>
-      </div>
+      </div>${greetingFigure('meadow')}
     </section>
     <section class="suggestions" aria-labelledby="suggested">
       <div class="section-title"><h2 id="suggested">Find din øvelse</h2><a href="#bibliotek" class="text-link">Se alle øvelser ${icon('arrow-right')}</a></div>
       ${grid(exercises.slice(0, 3))}
     </section>
     <section class="checkin" aria-labelledby="checkin-heading">
-      <div class="checkin-intro"><span class="checkin-symbol">${icon('notebook-pen')}</span><div><h2 id="checkin-heading">Hvordan har du det?</h2><p>${current ? 'Dit svar for i dag er gemt på din enhed.' : 'Tag et øjeblik og mærk efter.'}</p></div></div>
+      <div class="checkin-intro"><span class="checkin-symbol">${icon('notebook-pen')}</span><div><h2 id="checkin-heading">Hvordan har du det?</h2><p>${reply ? 'Pebble siger “' + reply + '”' : 'Tag et øjeblik og mærk efter.'}</p></div></div>
       <div class="mood-options">${moods.map(m => `<button data-mood="${m.id}" aria-pressed="${current === m.id}" class="mood">${icon(m.icon)}${m.title}</button>`).join('')}</div>
     </section>`
 }
@@ -162,12 +180,12 @@ function history() {
   }).join('')
 }
 function companion() {
-  return `<section class="companion-view"><div class="companion-art">${pebbleImage()}</div>
-      <div><h2>Mød Pebble</h2><p>Pebble er en lille sten med god tid. På Windows kan den sidde oven på dine andre vinduer og trække vejret sammen med dig.</p>
-      ${bridge ? `<button class="primary" data-action="show-pebble">${icon('monitor')}Vis Pebble på skrivebordet</button>` : `<a class="primary" href="/downloads/Aandehul-Windows.zip" download>${icon('download')}Hent til Windows</a>`}
+  return `<section class="companion-view"><div class="companion-art">${greetingFigure('portrait')}</div>
+      <div><h2>Hej, jeg er Pebble.</h2><p data-greeting-line>Jeg er en lille sten med god tid. Når jeg løfter mig, trækker vi vejret ind. Når jeg synker ned, puster vi ud.</p>
+      <button class="primary" data-start="rolig-vejrtraekning" data-minutes="1">${icon('wind')}Ét minut med mig</button>
       </div></section>
-      <section class="detail-block"><h2>Et minut med Pebble</h2><p>Klik på stenen på skrivebordet for at starte en vejrtrækningspause. Træk den hen, hvor den skal sidde. Højreklik for at åbne menuen.</p>
-      ${bridge ? `<button class="secondary" data-action="start-breathing">${icon('wind')}Træk vejret med Pebble</button>` : `<p class="small-note">Pak ZIP-filen ud, og start Aandehul.exe. Til Windows 10 og 11 (x64) med <a href="https://dotnet.microsoft.com/download/dotnet/10.0" target="_blank" rel="noreferrer">.NET 10 Desktop Runtime</a> og Microsoft Edge WebView2.</p>`}
+      <section class="detail-block"><h2>Pebble på skrivebordet</h2><p>På Windows kan Pebble sidde oven på dine andre vinduer. Klik på stenen for en pause, eller træk den hen, hvor den skal sidde.</p>
+      ${bridge ? `<div class="desktop-actions"><button class="secondary" data-action="show-pebble">${icon('monitor')}Vis Pebble på skrivebordet</button><button class="secondary" data-action="start-breathing">${icon('wind')}Træk vejret med Pebble</button></div>` : `<a class="secondary" href="/downloads/Aandehul-Windows.zip" download>${icon('download')}Hent til Windows</a><p class="small-note">Pak ZIP-filen ud, og start Aandehul.exe. Til Windows 10 og 11 (x64) med <a href="https://dotnet.microsoft.com/download/dotnet/10.0" target="_blank" rel="noreferrer">.NET 10 Desktop Runtime</a> og Microsoft Edge WebView2.</p>`}
       </section>`
 }
 function settings() {
@@ -187,6 +205,7 @@ function refreshSound() {
   button.innerHTML = icon(playing ? 'audio-lines' : 'volume-2') + '<span>' + (playing ? environments.find(s => s.id === selected)!.name : 'Lydmiljø') + '</span>'
 }
 function render() {
+  endGreeting()
   document.title = pageTitles[page] + ' · Åndehul'
   root.querySelector('#page-title')!.textContent = pageTitles[page]
   root.querySelector('#today')!.textContent = displayDate(new Date())
@@ -221,11 +240,52 @@ function setMenu(open: boolean) {
 function refocus(attribute: string, value: string) {
   view.querySelector<HTMLElement>(`[${attribute}="${CSS.escape(value)}"]`)?.focus({ preventScroll: true })
 }
+
+function settleGreeting(button: HTMLButtonElement) {
+  button.querySelector('.pebble-figure')?.classList.remove('is-talking')
+  const figure = button.querySelector<HTMLElement>('.pebble-figure')!
+  figure.dataset.pose = 'happy'
+  button.querySelector('.greet-bubble span')!.textContent = 'Hils igen'
+  button.setAttribute('aria-label', 'Hør en ny hilsen fra Pebble')
+  greetingSettle = window.setTimeout(() => { figure.dataset.pose = 'awake' }, 1400)
+}
+function endGreeting() {
+  window.clearTimeout(greetingSettle)
+  if (!greetingButton) return
+  const previous = greetingButton
+  greetingButton = null
+  stopPebbleVoice()
+  settleGreeting(previous)
+}
+async function greet(button: HTMLButtonElement) {
+  if (greetingButton) { endGreeting(); return }
+  window.clearTimeout(greetingSettle)
+  const turn = nextGreeting++
+  const greeting = greetings[turn % greetings.length]
+  greetingButton = button
+  view.querySelector('[data-greeting-line]')!.textContent = greeting.words
+  button.querySelector<HTMLElement>('.pebble-figure')!.dataset.pose = 'listening'
+  button.querySelector('.greet-bubble span')!.textContent = 'Stop hilsen'
+  button.setAttribute('aria-label', 'Stop Pebbles hilsen')
+  if (!(await playPebbleVoice(greeting.clip)) && greetingButton === button && nextGreeting === turn + 1) {
+    endGreeting()
+    announce(greeting.words)
+  }
+}
+window.addEventListener('aandehul:pebble-speaking', event => {
+  if (!greetingButton) return
+  greetingButton.querySelector('.pebble-figure')!.classList.toggle('is-talking', (event as CustomEvent<boolean>).detail)
+})
+window.addEventListener('aandehul:pebble-voice-ended', () => {
+  if (!greetingButton) return
+  settleGreeting(greetingButton)
+  greetingButton = null
+})
 root.addEventListener('click', async event => {
   const target = (event.target as Element).closest<HTMLElement>('button,a')
   if (!target) return
   const { action, start, favorite, mood, filter: choice, audio } = target.dataset
-  if (start) { openPlayer(start); return }
+  if (start) { endGreeting(); openPlayer(start, target.dataset.minutes ? Number(target.dataset.minutes) : undefined); return }
   if (favorite) {
     const favorites = [...view.querySelectorAll<HTMLElement>('[data-favorite]')]
     const index = favorites.indexOf(target)
@@ -253,6 +313,7 @@ root.addEventListener('click', async event => {
   if (target.classList.contains('skip')) { event.preventDefault(); root.querySelector<HTMLElement>('#content')!.focus(); return }
   if (target.matches('[data-nav],.brand')) setMenu(false)
   switch (action) {
+    case 'greet': await greet(target as HTMLButtonElement); break
     case 'menu': setMenu(true); break
     case 'close-menu': setMenu(false); break
     case 'close': utility.close(); break

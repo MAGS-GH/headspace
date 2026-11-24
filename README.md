@@ -4,7 +4,9 @@ Et lille, dansksproget pusterum med seks guidede øvelser og Pebble, en flytbar 
 
 ## Start med en pause
 
-Vælg **Start en pause** for tre minutters rolig vejrtrækning. Du kan ændre varigheden, holde pause og slå guideklange til undervejs. Meditation og afspænding viser et trin ad gangen. **Læs trin op** vises, når enheden har en lokal dansk stemme, som browseren kan bruge.
+Tryk på **Hils på mig** for at høre Pebble. Under **Start en pause** viser stenen dig rytmen med hele kroppen. Den løfter sig og vokser ved indånding og synker ned med rund mund ved udånding. Pilen og sekundtallet viser, hvor du er i åndedrættet. **Ét minut med mig** under **Mød Pebble** åbner en kort pause.
+
+Pebble kan også læse de danske meditationer og afspændingsøvelser højt. Stemmen følger med appen og virker offline. Brug **Pebbles stemme** i afspilleren for at slå tale til eller fra. Appen husker valget. Du kan ændre varigheden, holde pause og slå guideklange til undervejs.
 
 I **Lydmiljø** kan du vælge regn, havbrus eller skovvind. Lydene dannes på enheden. I **Indstillinger** kan du begrænse bevægelse og installere PWA'en. Åbn webudgaven én gang online, så browseren kan gemme appen, illustrationerne og skrifttyperne til offlinebrug. Installation kræver HTTPS eller localhost.
 
@@ -13,7 +15,7 @@ I **Lydmiljø** kan du vælge regn, havbrus eller skovvind. Lydene dannes på en
 1. Hent [Windows-pakken](public/downloads/Aandehul-Windows.zip) eller vælg **Mød Pebble → Hent til Windows** i webappen.
 2. Pak hele mappen ud, og start `Aandehul.exe`. Den lille pakke bruger .NET 10 Desktop Runtime (x64) og Microsoft Edge WebView2 Runtime på Windows 10 eller 11.
 3. Klik på Pebble for en vejrtrækningspause på ét minut. Klik igen for at holde pause eller fortsætte. Træk figuren til den ønskede placering.
-4. Højreklik på figuren eller ikonet ved uret for at åbne Åndehul, skjule Pebble eller afslutte appen. Når øvelsesvinduet lukkes, bliver figuren ved med at køre.
+4. Åbn menuen på figuren for at hilse, vælge oplæsning eller slå mindre bevægelse til. Du kan også bruge ikonet ved uret til at åbne Åndehul, skjule figuren eller afslutte appen. Når øvelsesvinduet lukkes, bliver figuren ved med at køre.
 
 Windows-appen indlæser sit medfølgende øvelsesrum i WebView2. Pebble-pauser vises i historikken i dette øvelsesrum. Appdata og vinduesplacering ligger i `%LOCALAPPDATA%\Aandehul`.
 
@@ -50,4 +52,4 @@ Scriptet bygger PWA'en og pakker den sammen med WPF-appen. Den lille download la
 
 Brug `docker-compose.yml` sammen med `docker-compose.dokploy.yml`. Angiv `APP_HOST` og et unikt `ROUTER_NAME` i miljøet. Webcontaineren lytter på port 3000 og bruger det eksisterende eksterne `dokploy-network` til Traefik. Der er kun brug for den statiske webservice.
 
-Illustrationerne er lavet til Åndehul. Licenser for Lucide, DM Sans og Lora følger med i den byggede app under `licenses/`.
+Illustrationerne er lavet til Åndehul. Licenser for Lucide, DM Sans og Lora følger med i den byggede app under `licenses/`. [Kilde og byggevejledning til Pebbles stemme](docs/pebbles-stemme.md) beskriver, hvordan taleklip og mundbevægelser laves.

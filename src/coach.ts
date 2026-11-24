@@ -3,6 +3,7 @@ export type ExerciseCategory = 'Vejrtrækning' | 'Meditation' | 'Afspænding'
 interface GuideStep {
   title: string
   instruction: string
+  pose?: 'rest' | 'listening' | 'awake' | 'happy'
 }
 
 interface BreathPattern {
@@ -48,7 +49,7 @@ export const exercises: Exercise[] = [
       { title: 'Giv benene plads', instruction: 'Flyt opmærksomheden langsomt fra anklerne op mod hofterne.' },
       { title: 'Hvil i midten', instruction: 'Læg mærke til den lille bevægelse i maven, når du trækker vejret.' },
       { title: 'Mærk dine skuldre', instruction: 'Følg armene helt ud til fingerspidserne. Måske føles én hånd varmere.' },
-      { title: 'Vend stille tilbage', instruction: 'Mærk kroppen som en helhed. Bevæg forsigtigt fingre og tæer.' },
+      { title: 'Vend stille tilbage', instruction: 'Mærk kroppen som en helhed. Bevæg forsigtigt fingre og tæer.', pose: 'awake' },
     ],
   },
   {
@@ -60,10 +61,10 @@ export const exercises: Exercise[] = [
     durations: [3, 7, 10],
     steps: [
       { title: 'Land her', instruction: 'Lad blikket hvile på et roligt punkt, eller luk øjnene et øjeblik.' },
-      { title: 'Lad dagen passere', instruction: 'Måske dukker et øjeblik fra dagen op. Lad det ligge et øjeblik.' },
-      { title: 'Mærk et åndedrag', instruction: 'Følg luften ind og ud. Du må gerne vende tilbage til åndedrættet mange gange.' },
-      { title: 'Find én lille ting', instruction: 'Tænk på en lille ting fra i dag, som var rar. Bliv lidt ved den.' },
-      { title: 'Tag roen med', instruction: 'Mærk rummet omkring dig, og kom langsomt tilbage i dit eget tempo.' },
+      { title: 'Lad dagen passere', instruction: 'Måske dukker et øjeblik fra dagen op. Lad det ligge et øjeblik.', pose: 'rest' },
+      { title: 'Mærk et åndedrag', instruction: 'Følg luften ind og ud. Du må gerne vende tilbage til åndedrættet mange gange.', pose: 'rest' },
+      { title: 'Find én lille ting', instruction: 'Tænk på en lille ting fra i dag, som var rar. Bliv lidt ved den.', pose: 'happy' },
+      { title: 'Tag roen med', instruction: 'Mærk rummet omkring dig, og kom langsomt tilbage i dit eget tempo.', pose: 'awake' },
     ],
   },
   {
@@ -77,7 +78,7 @@ export const exercises: Exercise[] = [
       { title: 'Sæt dig godt', instruction: 'Lad kroppen finde en rar stilling. Mærk dine fødder mod underlaget.' },
       { title: 'Lyt til rummet', instruction: 'Læg mærke til en lyd i nærheden. Lad den komme og gå.' },
       { title: 'Lyt lidt længere væk', instruction: 'Måske kan du høre noget udenfor. Vend roligt tilbage, når tankerne vandrer.' },
-      { title: 'Vend tilbage', instruction: 'Lad blikket glide rundt i rummet. Giv dig tid til at komme videre.' },
+      { title: 'Vend tilbage', instruction: 'Lad blikket glide rundt i rummet. Giv dig tid til at komme videre.', pose: 'awake' },
     ],
   },
   {
@@ -105,7 +106,7 @@ export const exercises: Exercise[] = [
       { title: 'Mærk dine skuldre', instruction: 'Læg mærke til, hvordan skuldrene føles lige nu.' },
       { title: 'Løft ganske let', instruction: 'Hvis det føles rart, så løft langsomt skuldrene en smule og lad dem synke igen.' },
       { title: 'Lad armene hvile', instruction: 'Mærk vægten i hænderne. Giv kæben lidt plads.' },
-      { title: 'Find tilbage', instruction: 'Bevæg forsigtigt fingrene og lad blikket vende tilbage til rummet.' },
+      { title: 'Find tilbage', instruction: 'Bevæg forsigtigt fingrene og lad blikket vende tilbage til rummet.', pose: 'awake' },
     ],
   },
 ]
@@ -225,6 +226,12 @@ if (typeof window !== 'undefined') {
 export interface CurrentCue extends GuideStep {
   index: number
   expansion: number
+  phase?: {
+    direction: 'inhale' | 'exhale'
+    seconds: number
+    remaining: number
+    fraction: number
+  }
 }
 
 export function currentCue(exercise: Exercise, elapsed: number, duration: number): CurrentCue {
@@ -240,6 +247,12 @@ export function currentCue(exercise: Exercise, elapsed: number, duration: number
       ...exercise.steps[breathingIn ? 0 : 1],
       index: breathingIn ? 0 : 1,
       expansion: breathingIn ? curve : 1 - curve,
+      phase: {
+        direction: breathingIn ? 'inhale' : 'exhale',
+        seconds: phaseLength,
+        remaining: Math.ceil(Math.min(phaseLength - phaseTime, duration - elapsed)),
+        fraction,
+      },
     }
   }
   const index = Math.min(exercise.steps.length - 1, Math.floor(elapsed / duration * exercise.steps.length))

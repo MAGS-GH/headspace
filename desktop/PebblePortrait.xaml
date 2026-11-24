@@ -1,0 +1,36 @@
+<UserControl x:Class="Aandehul.PebblePortrait"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="172" Height="113" Focusable="False">
+  <Grid Background="Transparent">
+    <Ellipse x:Name="GroundShadow" Width="96" Height="9" Margin="0,0,0,3"
+             VerticalAlignment="Bottom" RenderTransformOrigin=".5,.5">
+      <Ellipse.Fill>
+        <RadialGradientBrush>
+          <GradientStop Color="#A256503A" Offset="0" />
+          <GradientStop Color="#5656503A" Offset=".62" />
+          <GradientStop Color="#0056503A" Offset="1" />
+        </RadialGradientBrush>
+      </Ellipse.Fill>
+      <Ellipse.RenderTransform><ScaleTransform x:Name="ShadowSize" /></Ellipse.RenderTransform>
+    </Ellipse>
+    <Grid Width="118" Height="94.4" VerticalAlignment="Bottom" Margin="0,0,0,7" RenderTransformOrigin=".5,.97"
+          IsHitTestVisible="False">
+      <Grid.RenderTransform>
+        <TransformGroup>
+          <ScaleTransform x:Name="BodySize" />
+          <RotateTransform x:Name="BodyLean" />
+          <TranslateTransform x:Name="BodyLift" />
+        </TransformGroup>
+      </Grid.RenderTransform>
+      <Image x:Name="Body" />
+      <Image x:Name="Sprout" RenderTransformOrigin=".676,.28">
+        <Image.RenderTransform><RotateTransform x:Name="LeafTurn" /></Image.RenderTransform>
+      </Image>
+      <Image x:Name="Eyes" />
+      <Image x:Name="Mouth" RenderTransformOrigin=".37,.60">
+        <Image.RenderTransform><ScaleTransform x:Name="MouthSize" /></Image.RenderTransform>
+      </Image>
+    </Grid>
+  </Grid>
+</UserControl>
