@@ -8,7 +8,21 @@ Tryk på **Hils på mig** for at høre Pebble. Under **Start en pause** viser st
 
 Pebble kan også læse de danske meditationer og afspændingsøvelser højt. Stemmen følger med appen og virker offline. Brug **Pebbles stemme** i afspilleren for at slå tale til eller fra. Appen husker valget. Du kan ændre varigheden, holde pause og slå guideklange til undervejs.
 
-I **Lydmiljø** kan du vælge regn, havbrus eller skovvind. Lydene dannes på enheden. I **Indstillinger** kan du begrænse bevægelse og installere PWA'en. Åbn webudgaven én gang online, så browseren kan gemme appen, illustrationerne og skrifttyperne til offlinebrug. Installation kræver HTTPS eller localhost.
+I **Indstillinger** kan du begrænse bevægelse og installere PWA'en. Åbn webudgaven én gang online, så browseren kan hente appen og dens lyd til offlinebrug. Installation kræver HTTPS eller localhost.
+
+## Musik og naturlyde
+
+Åbn **Lydmiljø** fra forsiden eller under en øvelse. Vælg et spor for at høre det i løkke. Du kan lukke lydvælgeren, justere styrken eller vælge **Stop lyd**. Musikken dæmpes, når Pebble taler.
+
+| Musik | Kunstner | Licens for optagelsen |
+| --- | --- | --- |
+| [Afternoon Lullaby fra VoxeLibre](https://github.com/VoxeLibre/VoxeLibre/blob/4492ce6ff8d856daa4567abe2ea689f4e7a39842/CREDITS.md#music) | Diminixed | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| [Gymnopédie nr. 1](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100787) | Erik Satie, spillet af Kevin MacLeod | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| [Vaporware](https://opengameart.org/content/calm-piano-1-vaporware) | The Cynic Project | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) |
+
+Under **Naturlyde** finder du **Vandløbet** og **Fugle før regnen** fra Thimras’ [feltoptagelser](https://opengameart.org/content/park-ambiences), udgivet under [CC0](https://creativecommons.org/publicdomain/zero/1.0/). Du kan også vælge regn, havbrus og vind, som dannes på enheden.
+
+De fem optagelser følger med til offlinebrug. **Kunstnere og licenser** i lydvælgeren viser originalkilder, licenser og ændringer. Du kan desuden lytte til Minecraft-musikken online via [C418s egen udgivelse af *Sweden*](https://c418.bandcamp.com/track/sweden).
 
 ## Pebble på Windows
 
@@ -16,6 +30,8 @@ I **Lydmiljø** kan du vælge regn, havbrus eller skovvind. Lydene dannes på en
 2. Pak hele mappen ud, og start `Aandehul.exe`. Den lille pakke bruger .NET 10 Desktop Runtime (x64) og Microsoft Edge WebView2 Runtime på Windows 10 eller 11.
 3. Klik på Pebble for en vejrtrækningspause på ét minut. Klik igen for at holde pause eller fortsætte. Træk figuren til den ønskede placering.
 4. Åbn menuen på figuren for at hilse, vælge oplæsning eller slå mindre bevægelse til. Du kan også bruge ikonet ved uret til at åbne Åndehul, skjule figuren eller afslutte appen. Når øvelsesvinduet lukkes, bliver figuren ved med at køre.
+
+Hvis du lukker øvelsesvinduet, mens musikken spiller, fortsætter den sammen med skrivebordsstenen. Vælg **Stop baggrundslyd** ved uret for at få stilhed igen.
 
 Windows-appen indlæser sit medfølgende øvelsesrum i WebView2. Pebble-pauser vises i historikken i dette øvelsesrum. Appdata og vinduesplacering ligger i `%LOCALAPPDATA%\Aandehul`.
 

@@ -1,6 +1,10 @@
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,6 +22,10 @@ internal sealed class Studio : Window
     private readonly PebbleHistory history;
     private bool ready;
     private bool closed;
+    private bool companionSpeaking;
+    private int ambientRevision;
+    internal bool AmbientPlaying { get; private set; }
+    internal bool AllowClose { get; set; }
 
     internal Studio(Action showCompanion, Action startBreathing, PebbleHistory history)
     {
@@ -35,6 +43,12 @@ internal sealed class Studio : Window
         browser.DefaultBackgroundColor = System.Drawing.Color.FromArgb(249, 248, 241);
         Content = browser;
         Loaded += LoadStudio;
+        Closing += (_, e) =>
+        {
+            if (!AmbientPlaying || AllowClose || !TrySend(new { type = "studio-hidden" })) return;
+            e.Cancel = true;
+            Hide();
+        };
         Closed += (_, _) =>
         {
             closed = true;
@@ -64,9 +78,21 @@ internal sealed class Studio : Window
             core.NavigationStarting += (_, e) =>
             {
                 e.Cancel = !IsLocalPage(e.Uri);
-                if (!e.Cancel) ready = false;
+                if (!e.Cancel)
+                {
+                    ready = false;
+                    SetAmbientPlaying(false);
+                }
             };
-            core.NewWindowRequested += (_, e) => e.Handled = true;
+            core.ProcessFailed += (_, e) =>
+            {
+                if (e.ProcessFailedKind is CoreWebView2ProcessFailedKind.BrowserProcessExited or CoreWebView2ProcessFailedKind.RenderProcessExited)
+                {
+                    ready = false;
+                    SetAmbientPlaying(false);
+                }
+            };
+            core.NewWindowRequested += OpenMusicSource;
             core.WebMessageReceived += (_, e) =>
             {
                 if (!IsLocalPage(e.Source)) return;
@@ -77,8 +103,11 @@ internal sealed class Studio : Window
                 {
                     case "show-pebble": showCompanion(); break;
                     case "start-breathing": startBreathing(); break;
+                    case "ambient-playing": SetAmbientPlaying(true); break;
+                    case "ambient-stopped": SetAmbientPlaying(false); break;
                     case "pebble-ready":
                         ready = true;
+                        SetCompanionSpeaking(companionSpeaking);
                         foreach (var session in history.Pending) SendSession(session);
                         break;
                     case string ack when ack.StartsWith("pebble-saved:", StringComparison.Ordinal):
@@ -95,13 +124,81 @@ internal sealed class Studio : Window
         }
     }
 
-    private static bool IsLocalPage(string url) =>
+    private static bool IsLocalPage(string? url) =>
         Uri.TryCreate(url, UriKind.Absolute, out var page) && page.Scheme == "https" && page.Host == AppHost && page.IsDefaultPort;
 
-    private void SendSession(PebbleSession session)
+    private void OpenMusicSource(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
     {
-        if (ready && !closed)
-            browser.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(new { type = "pebble-session", record = session }, PebbleHistory.Json));
+        e.Handled = true;
+        if (!e.IsUserInitiated || !IsLocalPage(e.OriginalSourceFrameInfo?.Source) || !IsMusicSource(e.Uri)) return;
+        try
+        {
+            Process.Start(new ProcessStartInfo(e.Uri) { UseShellExecute = true })?.Dispose();
+        }
+        catch (Win32Exception)
+        {
+            MessageBox.Show(this, "Windows kunne ikke åbne linket. Vælg en standardbrowser i Windows-indstillinger.", "Åbn musikkilde", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private static bool IsMusicSource(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var source) || source.Scheme != "https" ||
+            !source.IsDefaultPort || source.UserInfo.Length != 0) return false;
+        string path = source.AbsolutePath;
+        return source.Host switch
+        {
+            "c418.bandcamp.com" => source.PathAndQuery == "/track/sweden",
+            "github.com" => path == "/VoxeLibre/VoxeLibre" || path.StartsWith("/VoxeLibre/VoxeLibre/", StringComparison.Ordinal),
+            "creativecommons.org" => path.StartsWith("/licenses/", StringComparison.Ordinal) || path.StartsWith("/publicdomain/", StringComparison.Ordinal),
+            "opengameart.org" => path.StartsWith("/content/", StringComparison.Ordinal) || path.StartsWith("/users/", StringComparison.Ordinal),
+            "incompetech.com" => path == "/music/royalty-free/index.html" && source.Query == "?isrc=USUAN1100787",
+            _ => false
+        };
+    }
+
+    internal void SetCompanionSpeaking(bool active)
+    {
+        companionSpeaking = active;
+        TrySend(new { type = "companion-speaking", active });
+    }
+
+    private void SetAmbientPlaying(bool playing)
+    {
+        AmbientPlaying = playing;
+        ambientRevision++;
+        if (!playing && !IsVisible)
+            Dispatcher.InvokeAsync(() => { if (!closed && !IsVisible && !AmbientPlaying) Close(); });
+    }
+
+    internal async void StopAmbient()
+    {
+        if (!AmbientPlaying || closed) return;
+        int revision = ambientRevision;
+        if (TrySend(new { type = "stop-ambient" }))
+        {
+            await Task.Delay(1500);
+            if (closed || !AmbientPlaying || revision != ambientRevision) return;
+        }
+        // A renderer that cannot acknowledge Stop must not keep an invisible audio session alive.
+        AmbientPlaying = false;
+        Close();
+    }
+
+    private void SendSession(PebbleSession session) => TrySend(new { type = "pebble-session", record = session });
+
+    private bool TrySend(object message)
+    {
+        if (!ready || closed) return false;
+        try
+        {
+            browser.CoreWebView2.PostWebMessageAsJson(JsonSerializer.Serialize(message, PebbleHistory.Json));
+            return true;
+        }
+        catch (Exception e) when (e is COMException or InvalidOperationException)
+        {
+            return false;
+        }
     }
 
     private void ShowMessage(string heading, string message)

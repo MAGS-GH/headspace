@@ -87,7 +87,8 @@ main:focus { outline: none; }
 .date-line svg { width: 16px; height: 16px; color: var(--accent); }
 h1 { font-size: 42px; margin-top: 4px; }
 .sound-button, .secondary, .circle-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 50px; min-height: 40px; padding: 0 16px; font-size: 13px; font-weight: 550; }
-.sound-button svg { width: 17px; }
+.sound-button svg { width: 17px; flex-shrink: 0; }
+.sound-button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sound-button:hover, .secondary:hover, .circle-button:hover { background: var(--pale); }
 .sound-button.playing { background: var(--sage); color: var(--green); }
 .circle-button { width: 38px; min-height: 38px; padding: 0; }
@@ -212,14 +213,6 @@ h1 { font-size: 42px; margin-top: 4px; }
 .dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .dialog-head h2 { font-size: 27px; }
 #utility p { font-size: 15px; color: var(--muted); margin: 8px 0; }
-.sounds { display: grid; gap: 4px; margin-block: 16px 24px; }
-.sounds button { display: flex; align-items: center; gap: 12px; padding: 12px 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 9px; font-size: 14px; }
-.sounds button[aria-pressed=true] { background: var(--sage); border-color: var(--pebble-border); color: var(--green); }
-.sounds button svg:last-child:not(:first-child) { margin-left: auto; width: 16px; }
-.volume-label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-.volume-label svg { width: 15px; }
-.volume-label output { margin-left: auto; }
-#volume { width: 100%; margin: 12px 0; accent-color: var(--terra); }
 @media (min-width: 1550px) { .hero { min-height: 320px; } .content-inner { padding-top: 44px; } }
 @media (max-width: 1190px) {
   :root { --sidebar-width: 209px; }
@@ -263,10 +256,10 @@ h1 { font-size: 42px; margin-top: 4px; }
 @media (max-width: 520px) {
   .mobile-bar { padding-inline: 16px; }
   .content-inner { padding: 20px 16px 28px; }
-  .page-header { margin-bottom: 16px; }
+  .page-header { margin-bottom: 16px; flex-wrap: wrap; gap: 8px 12px; }
   h1 { font-size: 33px; }
   .date-line { font-size: 12px; gap: 4px; }
-  .sound-button { padding-inline: 12px; min-height: 37px; font-size: 12px; gap: 4px; }
+  .sound-button { max-width: 10rem; padding-inline: 12px; min-height: 37px; font-size: 12px; gap: 4px; }
   .hero { min-height: 290px; align-items: flex-start; background-image: none; background-color: var(--mobile-hero); }
   .hero::after { content: ''; position: absolute; z-index: -2; inset: 19% 0 0; background: url('/images/meadow.webp') 76% bottom / auto 100% no-repeat; mask-image: linear-gradient(to bottom, var(--transparent), var(--mask-ink) 21%); }
   .hero::before { background: linear-gradient(162deg, var(--hero-wash) 10%, var(--hero-soft) 38%, var(--hero-clear) 72%); }

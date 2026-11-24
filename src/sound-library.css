@@ -1,0 +1,67 @@
+.sound-library {
+  width: min(510px, calc(100% - 28px));
+  max-height: calc(100dvh - 28px);
+  overscroll-behavior: contain;
+  padding: clamp(18px, 4vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.sound-library::backdrop { background: var(--overlay); backdrop-filter: blur(3px); }
+.sound-heading, .playing-line, .volume-line { display: flex; align-items: center; gap: 8px; }
+.sound-heading, .playing-line { justify-content: space-between; }
+.sound-heading h2 { font-size: 30px; }
+.sound-tabs { display: flex; gap: 4px; margin-block: 16px; background: var(--pale); border-radius: 10px; padding: 4px; }
+.sound-tabs button {
+  flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 35px;
+  border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--muted); font-size: 14px;
+}
+.sound-tabs button[aria-pressed=true] { background: var(--surface); color: var(--ink); border-color: var(--line); box-shadow: var(--edge-shadow); }
+.sound-tabs svg { width: 16px; height: 16px; }
+.track-list { display: grid; gap: 6px; }
+.track-choice {
+  display: flex; align-items: center; gap: 12px; min-width: 0; width: 100%; padding: 7px 10px 7px 7px; text-align: left;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px; color: var(--ink);
+}
+.track-choice:hover { background: var(--paper); border-color: var(--pebble-border); }
+.track-choice[aria-pressed=true] { background: var(--sage); border-color: var(--pebble-border); }
+.track-cover { width: 61px; height: 46px; flex-shrink: 0; border-radius: 5px; object-fit: cover; }
+.track-info { flex: 1; min-width: 0; }
+.track-info strong { display: block; font-size: 14px; font-weight: 620; line-height: 1.3; }
+.track-info small { display: block; color: var(--muted); font-size: 12px; line-height: 1.4; margin-top: 2px; }
+.track-time { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.track-control { color: var(--green); display: inline-grid; place-items: center; min-width: 24px; }
+.track-control svg { width: 16px; height: 16px; }
+.track-control .lucide-play { width: 12px; height: 12px; fill: currentColor; }
+.track-list h3 { font: 550 13px var(--body); color: var(--muted); letter-spacing: normal; margin: 8px 0 0; }
+.noise-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.noise-choices .track-choice { width: auto; gap: 6px; padding: 8px 10px; border-radius: 20px; }
+.noise-choices .track-info strong { font-size: 12px; font-weight: 500; }
+.noise-choices .track-control { display: none; }
+.noise-symbol { display: inline-flex; color: var(--green); }
+.noise-symbol svg { width: 15px; height: 15px; }
+.original-music { display: inline-flex; align-items: center; flex-wrap: wrap; gap: .25em; color: var(--accent); margin-top: 10px; font-size: 12px; text-underline-offset: 3px; }
+.original-music:hover, .sound-credits a:hover { text-decoration: underline; }
+.original-music svg { width: 14px; height: 14px; transform: rotate(-40deg); }
+.sound-mix { margin-top: 17px; padding-top: 14px; border-top: 1px solid var(--line); }
+.playing-line { color: var(--green); font-size: 13px; margin-bottom: 12px; }
+.playing-line button { padding: 4px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 20px; font-size: 12px; color: var(--ink); }
+.playing-line button:disabled { color: var(--muted); cursor: default; }
+.volume-line { color: var(--ink); font-size: 14px; }
+.volume-line svg { width: 15px; }
+.volume-line output { margin-left: auto; font-variant-numeric: tabular-nums; }
+#ambient-volume { display: block; width: 100%; margin: 8px 0 10px; accent-color: var(--terra); }
+.sound-credits { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 10px; font-size: 12px; color: var(--muted); }
+.sound-credits summary { cursor: pointer; width: fit-content; padding: 2px 0; }
+.sound-credits summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.sound-credits ul { padding: 0; margin: 10px 0 0; list-style: none; }
+.sound-credits li { display: grid; gap: 3px; padding: 8px 0; border-top: 1px solid var(--line); }
+.sound-credits small { font-size: inherit; }
+.sound-credits a { color: var(--accent); text-underline-offset: 3px; margin-right: 12px; }
+@media (max-width: 380px) {
+  .track-choice { gap: 7px; }
+  .track-cover { width: 42px; height: 42px; }
+  .track-control { min-width: 14px; }
+}

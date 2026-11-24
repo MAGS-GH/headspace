@@ -13,6 +13,7 @@ internal sealed class PebbleVoice
     private readonly Envelope? envelope;
     private string? currentCue;
     internal bool Speaking { get; private set; }
+    internal event Action<bool>? SpeakingChanged;
     private sealed record Envelope(int StepMs, Dictionary<string, string> Clips);
 
     internal PebbleVoice()
@@ -52,8 +53,9 @@ internal sealed class PebbleVoice
         player.MediaOpened += (_, _) =>
         {
             if (active != player) return;
-            Speaking = true;
             player.Play();
+            Speaking = true;
+            SpeakingChanged?.Invoke(true);
         };
         player.MediaEnded += (_, _) => { if (active == player) Stop(); };
         player.MediaFailed += (_, _) => { if (active == player) Stop(); };
@@ -65,7 +67,11 @@ internal sealed class PebbleVoice
         var player = active;
         active = null;
         currentCue = null;
-        Speaking = false;
         player?.Close();
+        if (Speaking)
+        {
+            Speaking = false;
+            SpeakingChanged?.Invoke(false);
+        }
     }
 }

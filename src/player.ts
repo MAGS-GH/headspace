@@ -1,5 +1,6 @@
 import { currentCue, exercises, saveSession } from './coach'
 import { icon } from './icon'
+import { openSoundLibrary } from './sound-library'
 import { pebbleFigure } from './pebble'
 import { playPebbleStep, playPebbleVoice, stopPebbleVoice } from './pebble-voice'
 import './player.css'
@@ -97,6 +98,7 @@ export function openPlayer(exerciseId: string, minutes?: number): void {
           <button type="button" class="coach-playback"></button>
           <button type="button" class="coach-sound" aria-pressed="false"></button>
         </div>
+        <button type="button" class="coach-ambient" aria-haspopup="dialog">${icon('headphones')} Lydmiljø</button>
       </div>
       <p class="coach-voice-status" role="status" hidden></p>
       <button type="button" class="coach-done" hidden>Tilbage til mit åndehul</button>
@@ -285,6 +287,7 @@ export function openPlayer(exerciseId: string, minutes?: number): void {
     const time = elapsed()
     window.clearInterval(tick)
     window.removeEventListener('pagehide', dismiss)
+    window.removeEventListener('aandehul:studio-hidden', dismiss)
     document.removeEventListener('visibilitychange', render)
     window.removeEventListener('aandehul:pebble-speaking', reflectSpeech)
     stopSpeaking()
@@ -322,6 +325,11 @@ export function openPlayer(exerciseId: string, minutes?: number): void {
     if (soundOn) void playNote(392)
     else if (audio?.state === 'running') void audio.suspend().catch(() => {})
   })
+  element<HTMLButtonElement>('.coach-ambient').addEventListener('click', () => {
+    openSoundLibrary(() => {
+      if (finished && dialog.open) done.focus({ preventScroll: true })
+    })
+  })
   speech.addEventListener('click', () => {
     speechOn = !speechOn
     setPreference(speechKey, speechOn)
@@ -348,6 +356,7 @@ export function openPlayer(exerciseId: string, minutes?: number): void {
     if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dismiss()
   })
   window.addEventListener('pagehide', dismiss, { once: true })
+  window.addEventListener('aandehul:studio-hidden', dismiss)
   document.addEventListener('visibilitychange', render)
   stopPebbleVoice()
   window.addEventListener('aandehul:pebble-speaking', reflectSpeech)

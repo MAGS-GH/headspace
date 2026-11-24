@@ -33,13 +33,15 @@ public partial class Companion : Window
     private int lastPhase = -1;
     private DateTimeOffset startedAt;
     internal bool AllowClose { get; set; }
+    internal bool IsSpeaking => voice.Speaking;
     private sealed record Preferences(bool Voice, bool ReducedMotion);
 
-    internal Companion(Action openStudio, Action quit, Action<PebbleSession> saveSession)
+    internal Companion(Action openStudio, Action quit, Action<PebbleSession> saveSession, Action<bool> speakingChanged)
     {
         this.openStudio = openStudio;
         this.quit = quit;
         this.saveSession = saveSession;
+        voice.SpeakingChanged += speakingChanged;
         InitializeComponent();
         RestorePreferences();
         SourceInitialized += (_, _) => RestorePosition();

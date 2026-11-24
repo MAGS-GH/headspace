@@ -428,6 +428,18 @@
   color: var(--coach-primary);
 }
 
+.coach-player .coach-ambient {
+  margin: 8px auto 0;
+  display: flex;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: var(--coach-muted);
+  font-size: .82rem;
+}
+.coach-player .coach-ambient:hover { background: var(--coach-wash); }
+.coach-player .coach-ambient svg { width: 15px; height: 15px; }
+
 .coach-player .coach-speech {
   min-height: 36px;
   margin-left: auto;

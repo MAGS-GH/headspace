@@ -1,0 +1,43 @@
+import type { Recording } from './recording'
+
+export const musicTracks = [
+  {
+    id: 'music-afternoon-lullaby',
+    name: 'Afternoon Lullaby',
+    title: 'Afternoon Lullaby',
+    artist: 'Diminixed',
+    description: 'En stille klavermelodi fra spillet VoxeLibre.',
+    src: '/soundscapes/music-afternoon-lullaby.mp3',
+    duration: 67,
+    sourceUrl: 'https://github.com/VoxeLibre/VoxeLibre/blob/4492ce6ff8d856daa4567abe2ea689f4e7a39842/CREDITS.md#music',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    changes: 'Konverteret fra Ogg Vorbis til MP3 med lydniveauet sænket 0,4 dB. Denne udgave er også under CC BY-SA 4.0.',
+  },
+  {
+    id: 'music-gymnopedie',
+    name: 'Gymnopédie nr. 1',
+    title: 'Gymnopedie No. 1',
+    artist: 'Erik Satie, spillet af Kevin MacLeod',
+    description: 'Soloklaver med luft mellem de bløde akkorder.',
+    src: '/soundscapes/music-gymnopedie.mp3',
+    duration: 187,
+    sourceUrl: 'https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100787',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    changes: 'Lydniveauet er sænket 1 dB. Kodet som MP3 ved 128 kbit/s.',
+  },
+  {
+    id: 'music-vaporware',
+    name: 'Vaporware',
+    title: 'Vaporware',
+    artist: 'The Cynic Project',
+    description: 'Lyst klaver over varme, svævende synthtoner.',
+    src: '/soundscapes/music-vaporware.mp3',
+    duration: 165,
+    sourceUrl: 'https://opengameart.org/content/calm-piano-1-vaporware',
+    license: 'CC0 1.0',
+    licenseUrl: 'https://creativecommons.org/publicdomain/zero/1.0/',
+    changes: 'Lydniveauet er sænket 2,6 dB. Kodet som MP3 ved 128 kbit/s.',
+  },
+] satisfies Recording[]

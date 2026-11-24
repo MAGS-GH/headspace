@@ -1,7 +1,8 @@
 import './style.css'
 import { exercises, getHistory, isFavorite, toggleFavorite, type Exercise } from './coach'
 import { openPlayer } from './player'
-import { ambientState, environments, setEnvironment, setLevel, type EnvironmentId } from './ambient'
+import { ambientState, environments, setCompanionSpeaking, setEnvironment } from './ambient'
+import { openSoundLibrary } from './sound-library'
 import { icon } from './icon'
 import { pebbleFigure } from './pebble'
 import { playPebbleVoice, stopPebbleVoice } from './pebble-voice'
@@ -46,7 +47,10 @@ function checkins(): Record<string, string> {
 }
 
 interface InstallPrompt extends Event { prompt(): Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> }
-type DesktopBridge = { postMessage(command: string): void }
+type DesktopBridge = {
+  postMessage(command: string): void
+  addEventListener(type: 'message', listener: (event: MessageEvent) => void): void
+}
 const bridge = (window as Window & { chrome?: { webview?: DesktopBridge } }).chrome?.webview
 let installPrompt: InstallPrompt | null = null
 let installed = window.matchMedia('(display-mode: standalone)').matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone)
@@ -192,7 +196,7 @@ function settings() {
   const reduced = document.documentElement.classList.contains('less-motion')
   return `<section class="settings-list">
     <div class="settings-row"><span class="row-symbol">${icon('leaf')}</span><div><strong>Mindre bevægelse</strong><p>Gør animationerne i øvelserne mere stille.</p></div><button data-action="motion" role="switch" aria-checked="${reduced}" aria-label="Mindre bevægelse" class="switch"><span></span></button></div>
-    <div class="settings-row"><span class="row-symbol">${icon('headphones')}</span><div><strong>Lydmiljø</strong><p>Vælg en baggrundslyd og dens lydstyrke.</p></div><button class="secondary" data-action="sound">Vælg lyd</button></div>
+    <div class="settings-row"><span class="row-symbol">${icon('headphones')}</span><div><strong>Lydmiljø</strong><p>Vælg musik eller naturlyde til din pause.</p></div><button class="secondary" data-action="sound">Vælg lyd</button></div>
     ${bridge ? '' : `<div class="settings-row"><span class="row-symbol">${icon('download')}</span><div><strong>Installér Åndehul</strong><p>Åbn dit pusterum som app på denne enhed.</p></div>${installed ? '<span class="installed">Installeret</span>' : '<button class="secondary" data-action="install">Installér</button>'}</div>`}
     <div class="settings-row"><span class="row-symbol">${icon('monitor')}</span><div><strong>Lokalt på din enhed</strong><p>Dine favoritter, pauser og indtjekninger gemmes i denne app.</p></div></div>
   </section>`
@@ -202,8 +206,25 @@ function refreshSound() {
   const playing = selected !== 'off'
   const button = root.querySelector<HTMLButtonElement>('.sound-button')!
   button.classList.toggle('playing', playing)
-  button.innerHTML = icon(playing ? 'audio-lines' : 'volume-2') + '<span>' + (playing ? environments.find(s => s.id === selected)!.name : 'Lydmiljø') + '</span>'
+  const label = environments.find(s => s.id === selected)?.name ?? 'Lydmiljø'
+  button.title = playing ? 'Lydmiljø · ' + label : label
+  button.setAttribute('aria-label', playing ? 'Åbn lydmiljø. Spiller ' + label : 'Lydmiljø')
+  button.innerHTML = icon(playing ? 'audio-lines' : 'volume-2') + '<span>' + label + '</span>'
 }
+window.addEventListener('aandehul:ambient-change', () => {
+  refreshSound()
+  bridge?.postMessage(ambientState().selected === 'off' ? 'ambient-stopped' : 'ambient-playing')
+})
+bridge?.addEventListener('message', event => {
+  switch (event.data?.type) {
+    case 'stop-ambient': void setEnvironment('off'); break
+    case 'companion-speaking': setCompanionSpeaking(event.data.active === true); break
+    case 'studio-hidden':
+      endGreeting()
+      window.dispatchEvent(new Event('aandehul:studio-hidden'))
+      break
+  }
+})
 function render() {
   endGreeting()
   document.title = pageTitles[page] + ' · Åndehul'
@@ -220,11 +241,6 @@ function render() {
 function dialogContent(title: string, body: string) {
   utility.innerHTML = `<div class="dialog-head"><h2 id="utility-heading">${title}</h2><button data-action="close" class="circle-button" aria-label="Luk">${icon('x')}</button></div>${body}`
   if (!utility.open) utility.showModal()
-}
-function soundDialog() {
-  const { selected, level } = ambientState()
-  dialogContent('Lydmiljø', `<p>Vælg en lyd til dit pusterum.</p><div class="sounds">${environments.map(s => `<button data-audio="${s.id}" aria-pressed="${s.id === selected}">${icon(s.icon)}<span>${s.name}</span>${s.id === selected ? icon('check') : ''}</button>`).join('')}</div>
-    <label class="volume-label" for="volume">${icon('volume-2')} Lydstyrke <output id="volume-output">${Math.round(level * 100)} %</output></label><input id="volume" type="range" min="0" max="100" value="${Math.round(level * 100)}">`)
 }
 function setMenu(open: boolean) {
   root.classList.toggle('menu-open', open)
@@ -284,7 +300,7 @@ window.addEventListener('aandehul:pebble-voice-ended', () => {
 root.addEventListener('click', async event => {
   const target = (event.target as Element).closest<HTMLElement>('button,a')
   if (!target) return
-  const { action, start, favorite, mood, filter: choice, audio } = target.dataset
+  const { action, start, favorite, mood, filter: choice } = target.dataset
   if (start) { endGreeting(); openPlayer(start, target.dataset.minutes ? Number(target.dataset.minutes) : undefined); return }
   if (favorite) {
     const favorites = [...view.querySelectorAll<HTMLElement>('[data-favorite]')]
@@ -305,11 +321,6 @@ root.addEventListener('click', async event => {
     render(); refocus('data-mood', mood); announce('Din indtjekning er gemt.'); return
   }
   if (choice) { filter = choice; render(); refocus('data-filter', choice); return }
-  if (audio && environments.some(e => e.id === audio)) {
-    try { await setEnvironment(audio as EnvironmentId); if (utility.open) { soundDialog(); utility.querySelector<HTMLElement>(`[data-audio="${audio}"]`)?.focus() } }
-    catch { dialogContent('Lydmiljø', '<p>Lyden kunne ikke startes på denne enhed. Prøv igen, når din lydudgang er klar.</p>') }
-    refreshSound(); return
-  }
   if (target.classList.contains('skip')) { event.preventDefault(); root.querySelector<HTMLElement>('#content')!.focus(); return }
   if (target.matches('[data-nav],.brand')) setMenu(false)
   switch (action) {
@@ -317,7 +328,7 @@ root.addEventListener('click', async event => {
     case 'menu': setMenu(true); break
     case 'close-menu': setMenu(false); break
     case 'close': utility.close(); break
-    case 'sound': soundDialog(); break
+    case 'sound': openSoundLibrary(); break
     case 'show-pebble': case 'start-breathing': bridge?.postMessage(action); break
     case 'motion': {
       const reduced = document.documentElement.classList.toggle('less-motion')
@@ -344,12 +355,6 @@ utility.addEventListener('click', event => {
   if (event.target !== utility) return
   const r = utility.getBoundingClientRect()
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) utility.close()
-})
-root.addEventListener('input', event => {
-  const input = event.target as HTMLInputElement
-  if (input.id !== 'volume') return
-  setLevel(Number(input.value) / 100)
-  utility.querySelector('output')!.value = input.value + ' %'
 })
 window.addEventListener('hashchange', () => {
   page = getPage(); setMenu(false); render(); window.scrollTo(0, 0)

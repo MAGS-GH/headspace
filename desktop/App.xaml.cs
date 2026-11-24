@@ -42,7 +42,8 @@ public partial class App : Application
         }
 
         history = new PebbleHistory();
-        companion = new Companion(OpenStudio, Quit, history.Add);
+        companion = new Companion(OpenStudio, Quit, history.Add, active => studio?.SetCompanionSpeaking(active));
+        SessionEnding += (_, _) => PrepareShutdown();
         var menu = new Forms.ContextMenuStrip();
         menu.Items.Add("Åbn Åndehul", null, (_, _) => OpenStudio());
         var toggle = menu.Items.Add("Skjul Pebble", null, (_, _) =>
@@ -51,9 +52,14 @@ public partial class App : Application
             else ShowCompanion();
         });
         menu.Items.Add("Træk vejret i ét minut", null, (_, _) => StartBreathing());
+        var stopAmbient = menu.Items.Add("Stop baggrundslyd", null, (_, _) => studio?.StopAmbient());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Afslut Åndehul", null, (_, _) => Quit());
-        menu.Opening += (_, _) => toggle.Text = companion.IsVisible ? "Skjul Pebble" : "Vis Pebble";
+        menu.Opening += (_, _) =>
+        {
+            toggle.Text = companion.IsVisible ? "Skjul Pebble" : "Vis Pebble";
+            stopAmbient.Visible = studio?.AmbientPlaying == true;
+        };
         trayIcon = Environment.ProcessPath is string exe ? Icon.ExtractAssociatedIcon(exe) : null;
         tray = new Forms.NotifyIcon
         {
@@ -87,6 +93,7 @@ public partial class App : Application
         {
             studio = new Studio(ShowCompanion, StartBreathing, history!);
             studio.Closed += (_, _) => studio = null;
+            studio.SetCompanionSpeaking(companion!.IsSpeaking);
         }
         if (studio.WindowState == WindowState.Minimized)
             studio.WindowState = WindowState.Normal;
@@ -96,8 +103,14 @@ public partial class App : Application
 
     private void Quit()
     {
-        if (companion != null) companion.AllowClose = true;
+        PrepareShutdown();
         Shutdown();
+    }
+
+    private void PrepareShutdown()
+    {
+        if (companion != null) companion.AllowClose = true;
+        if (studio != null) studio.AllowClose = true;
     }
 
     protected override void OnExit(ExitEventArgs e)
